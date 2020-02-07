@@ -11,7 +11,7 @@ This repository implements the firmware for the hoveboard sideboards. The hovebo
 ---
 ## Hardware
 
-The original sideboard hardware supports one 4-pin cable that originally was connected to the hoveboard mainboard. They break out GND, 12/15V and USART. Additionally, two ports are used to connect to the LED boards. On the back of the board, two Photo Interrupter Optical Switches can be found, originally used to detect if a human is standing on the hoverboard.
+The original sideboard hardware supports one 4-pin cable that originally was connected to the hoveboard mainboard. It breaks out GND, 12/15V and USART. Additionally, two ports are used to connect to the LED boards. On the back of the board, two Photo Interrupter Optical Switches can be found, originally used to detect if a human is standing on the hoverboard.
 ![sideboard](/docs/pictures/sideboard_pinout.png)
 
 The heart of the sideboard is a [STM32F103C8T6](/docs/stm32f103c8-Datasheet.pdf) with the pinout shown in the follwing figure:
