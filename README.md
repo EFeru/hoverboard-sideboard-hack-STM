@@ -6,7 +6,7 @@
 
 This repository implements the firmware for the hoveboard sideboards. The hoveboard comes with two identical sideboards that can be flashed with this firmware.
 
-### ► If you have an GD32 sideboard check-out the repo [hoverboard-sideboard-hack-GD](https://github.com/EmanuelFeru/hoverboard-sideboard-hack-GD)
+### ► If you have a GD32 sideboard check-out the repo [hoverboard-sideboard-hack-GD](https://github.com/EmanuelFeru/hoverboard-sideboard-hack-GD)
 
 ---
 ## Hardware
