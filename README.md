@@ -1,6 +1,6 @@
-# hoverboard-sideboard-hack-GD
+# hoverboard-sideboard-hack-STM
 
-[![Build Status](https://travis-ci.com/EmanuelFeru/hoverboard-sideboard-hack-GD.svg?token=PqYy6QC9o8nDVwJPGmrv&branch=master)](https://travis-ci.com/EmanuelFeru/hoverboard-sideboard-hack-GD)
+[![Build Status](https://travis-ci.com/EmanuelFeru/hoverboard-sideboard-hack-STM.svg?token=PqYy6QC9o8nDVwJPGmrv&branch=master)](https://travis-ci.com/EmanuelFeru/hoverboard-sideboard-hack-STM)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CU2SWN2XV9SCY&currency_code=EUR&source=url)
 
