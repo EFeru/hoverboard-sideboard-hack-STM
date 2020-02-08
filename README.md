@@ -68,7 +68,7 @@ make flash
 ---
 ## Example Variants 
 
-This firmware offers currently these variants (selectable in [config.h](/Inc/config.h)):
+This firmware offers currently these variants (selectable in [platformio.ini](/platformio.ini) or [config.h](/Inc/config.h)):
 - **VARIANT_DEBUG**: In this variant the user can interact with sideboard via a Serial Monitor to observe and check the capabilities of the sideboard.
 - **VARIANT_HOVERBOARD**: In this variant the sideboard is communicating with the mainboard of a hoverboard using the [FOC firmware repository](https://github.com/EmanuelFeru/hoverboard-firmware-hack-FOC). This Variant is not yet fully tested!
 
@@ -77,7 +77,7 @@ Of course the firmware can be further customized for other needs or projects.
 ---
 ## 3D Visualization Demo
 
-By [converting Quaternions to Euler angles](https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles), we can make a [3D visualization example](/docs/sketch_processing/sketch_processing.pde) in [Processing](https://processing.org/) as shown below. For this Demo use the VARIANT_HOVERBOARD.
+By [converting Quaternions to Euler angles](https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles), we can make a [3D visualization example](/docs/sketch_processing/sketch_processing.pde) in [Processing](https://processing.org/) as shown below. For this Demo VARIANT_HOVERBOARD was used.
 
 ![sketch_pic](/docs/pictures/sketch_processing_pic.png)
 
@@ -85,7 +85,7 @@ By [converting Quaternions to Euler angles](https://en.wikipedia.org/wiki/Conver
 ---
 ## Contributions
 
-Every contribution to this repository is highly appriciated! Feel free to create pull requests to improve this firmware as ultimately you are going to help everyone. 
+Every contribution to this repository is highly appreciated! Feel free to create pull requests to improve this firmware as ultimately you are going to help everyone. 
 
 If you want to donate to keep this firmware updated, please use the link below:
 

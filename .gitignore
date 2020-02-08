@@ -5,6 +5,7 @@ MDK-ARM/DebugConfig/
 MDK-ARM/RTE/
 MDK-ARM/sideboard_CobeMX_prj/
 MDK-ARM/*.uvguix
+MDK-ARM/.lst
 !build/VARIANT_DEBUG/firmware.hex
 !build/VARIANT_DEBUG/firmware.bin
 !build/VARIANT_DEBUG/firmware.elf

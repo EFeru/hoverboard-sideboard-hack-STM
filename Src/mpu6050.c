@@ -3226,18 +3226,18 @@ void mpu_start_self_test(void)
     result = mpu_run_self_test(gyro, accel);
 #endif
     if (result == 0x7) {
-				#ifdef SERIAL_DEBUG
-					consoleLog("Passed!\n");
-					log_i("accel: %7.4f %7.4f %7.4f\n",
-											accel[0]/65536.f,
-											accel[1]/65536.f,
-											accel[2]/65536.f);
-					log_i("gyro: %7.4f %7.4f %7.4f\n",
-											gyro[0]/65536.f,
-											gyro[1]/65536.f,
-											gyro[2]/65536.f);
-					/* Test passed. We can trust the gyro data here, so now we need to update calibrated data*/
-				#endif
+        #ifdef SERIAL_DEBUG
+            consoleLog("Passed!\n");
+            log_i("accel: %7.4f %7.4f %7.4f\n",
+                                    accel[0]/65536.f,
+                                    accel[1]/65536.f,
+                                    accel[2]/65536.f);
+            log_i("gyro: %7.4f %7.4f %7.4f\n",
+                                    gyro[0]/65536.f,
+                                    gyro[1]/65536.f,
+                                    gyro[2]/65536.f);
+            /* Test passed. We can trust the gyro data here, so now we need to update calibrated data*/
+        #endif
 
 #ifdef USE_CAL_HW_REGISTERS
         /*
@@ -3357,10 +3357,10 @@ int mpu_config(void)
     // mpu_get_gyro_fsr(&gyro_fsr);
     // mpu_get_accel_fsr(&accel_fsr);
 		
-		/* Initialize HAL state variables. */
-		hal.sensors 				= ACCEL_ON | GYRO_ON;
-		hal.dmp_on 					= 0;
-    hal.report 					= 0;
+    /* Initialize HAL state variables. */
+    hal.sensors 			= ACCEL_ON | GYRO_ON;
+    hal.dmp_on 				= 0;
+    hal.report 				= 0;
     hal.next_pedo_ms 		= 0;
     hal.next_temp_ms 		= 0;
 		
