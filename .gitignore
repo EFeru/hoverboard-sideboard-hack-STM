@@ -6,7 +6,6 @@ MDK-ARM/Listing/
 MDK-ARM/Objects/
 MDK-ARM/RTE/
 MDK-ARM/*.uvguix.*
-build/
 !build/VARIANT_DEBUG/firmware.hex
 !build/VARIANT_DEBUG/firmware.bin
 !build/VARIANT_DEBUG/firmware.elf
