@@ -59,10 +59,10 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  __HAL_UART_FLUSH_DRREGISTER(&huart2);     // Clear the buffer to prevent overrun
+  __HAL_UART_FLUSH_DRREGISTER(&huart2);           // Clear the buffer to prevent overrun
     
   #ifdef SERIAL_DEBUG  
-    if (rxBuffer != '\n' && rxBuffer != '\r') { 					// Do not accept 'new line' (ascii 10) and 'carriage return' (ascii 13) commands
+    if (rxBuffer != '\n' && rxBuffer != '\r') { 	// Do not accept 'new line' (ascii 10) and 'carriage return' (ascii 13) commands
         userCommand = rxBuffer;
     }
   #endif
@@ -88,8 +88,8 @@ typedef struct{
   uint16_t	start;
   int16_t  	roll;
   int16_t  	pitch;
-	int16_t  	yaw;
-	uint16_t  sensors;
+  int16_t  	yaw;
+  uint16_t  sensors;
   uint16_t 	checksum;
 } SerialSideboard;
 SerialSideboard Sideboard;
@@ -97,16 +97,17 @@ SerialSideboard Sideboard;
 
 #ifdef SERIAL_FEEDBACK
 typedef struct{
-   uint16_t start;
-   int16_t 	cmd1;
-   int16_t 	cmd2;
-   int16_t 	speedR;
-   int16_t 	speedL;
-   int16_t 	speedR_meas;
-   int16_t 	speedL_meas;
-   int16_t 	batVoltage;
-   int16_t 	boardTemp;
-   int16_t  checksum;
+	uint16_t 	start;
+	int16_t 	cmd1;
+	int16_t 	cmd2;
+	int16_t 	speedR;
+	int16_t 	speedL;
+	int16_t 	speedR_meas;
+	int16_t 	speedL_meas;
+	int16_t 	batVoltage;
+	int16_t 	boardTemp;
+	uint16_t 	cmdLed;
+	uint16_t  checksum;
 } SerialFeedback;
 SerialFeedback Feedback;
 SerialFeedback NewFeedback;
@@ -118,8 +119,8 @@ static uint8_t timeoutFlagSerial  = 0;  				// Timeout Flag for Rx Serial comman
 extern MPU_Data 	mpu;													// holds the MPU-6050 data
 ErrorStatus				mpuStatus = SUCCESS;					// holds the MPU-6050 status: SUCCESS or ERROR
 
-
-uint8_t 					sensor1, sensor2; 						// holds the sensor1 and sensor 2 values
+FlagStatus 		  	sensor1, sensor2; 					  // holds the sensor1 and sensor 2 values
+FlagStatus			  sensor1_read, sensor2_read;	  // holds the instantaneous Read for sensor1 and sensor 2
 
 static uint32_t 	main_loop_counter;						// main loop counter to perform task squeduling inside main()
 /* USER CODE END 0 */
@@ -170,11 +171,15 @@ int main(void)
 		HAL_UART_Receive_DMA (&huart2, (uint8_t *)&NewFeedback, sizeof(NewFeedback));
 	#endif
 
-	introDemoLED(100);														// Short LEDs intro demo with 100 ms delay. This also gives some time for the MPU-6050 to initialize.  
-  if(mpu_config()) { 														// IMU MPU-6050 config
+	intro_demo_led(100);								// Short LEDs intro demo with 100 ms delay. This also gives some time for the MPU-6050 to power-up.	
+	if(mpu_config()) { 									// IMU MPU-6050 config
 		mpuStatus = ERROR;
-	}		
-	mpu_handle_input('h'); 												// Print the User Help commands to serial
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on RED LED
+	}
+	else {
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on GREEN LED
+	}
+	mpu_handle_input('h'); 						  // Print the User Help commands to serial
 
   /* USER CODE END 2 */
 
@@ -186,11 +191,15 @@ int main(void)
 
     // ==================================== LEDs Handling ====================================
 		// HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);                // Toggle BLUE1 LED
-		if (SUCCESS == mpuStatus) {			      
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);	  // Turn on GREEN LED
-		} else {
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);	   // Turn on RED LED
-		}	
+		#ifdef SERIAL_FEEDBACK
+			if (!timeoutFlagSerial) {
+				if (Feedback.cmdLed & LED1_SET) { HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET); }
+				if (Feedback.cmdLed & LED2_SET) { HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET); }
+				if (Feedback.cmdLed & LED3_SET) { HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET); }
+				if (Feedback.cmdLed & LED4_SET) { HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET); }
+				if (Feedback.cmdLed & LED5_SET) { HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET); }
+			}
+		#endif
 
 		// ==================================== USER Handling ====================================
 		#ifdef SERIAL_DEBUG
@@ -209,34 +218,42 @@ int main(void)
 			mpu_get_data();
 		}
 		// Print MPU data to Console
-		if (main_loop_counter % 50 == 0 && SUCCESS == mpuStatus) {
+		if (main_loop_counter % 50 == 0) {
 			mpu_print_to_console();
 		}	
 		
 
 		// ==================================== SENSORS Handling ====================================
+    sensor1_read = HAL_GPIO_ReadPin(SENSOR1_GPIO_Port, SENSOR1_Pin);
+		sensor2_read = HAL_GPIO_ReadPin(SENSOR2_GPIO_Port, SENSOR2_Pin);
+
 		// SENSOR1
-		if (HAL_GPIO_ReadPin(SENSOR1_GPIO_Port, SENSOR1_Pin)) {
-      sensor1 = 1;
-			// Sensor ACTIVE: Do something here
+		if (sensor1 == RESET && sensor1_read == SET) {
+      sensor1 = SET;
+			// Sensor ACTIVE: Do something here (one time task on activation)
 			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
-			consoleLog("-- SENSOR 1 Active --\n");
-			HAL_Delay(50);			
-		} else {
-      sensor1 = 0;
+			consoleLog("-- SENSOR 1 Active --\n");		
+		} else if(sensor1 == SET && sensor1_read == RESET) {
+      sensor1 = RESET;
 			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);			
 		}
 		
 		// SENSOR2
-		if (HAL_GPIO_ReadPin(SENSOR2_GPIO_Port, SENSOR2_Pin)) {
-      sensor2 = 1;
-			// Sensor ACTIVE: Do something here
+		if (sensor2 == RESET && sensor2_read == SET) {
+      sensor2 = SET;
+			// Sensor ACTIVE: Do something here (one time task on activation)
 			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET);
 			consoleLog("-- SENSOR 2 Active --\n");
-			HAL_Delay(50);
-		} else {
-      sensor2 = 0;
+		} else if (sensor2 == SET && sensor2_read == RESET) {
+      sensor2 = RESET;
 			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET);
+		}
+
+    if (sensor1 == SET) {
+      // Sensor ACTIVE: Do something here (continuous task)
+		}
+		if (sensor2 == SET) {
+			// Sensor ACTIVE: Do something here (continuous task)
 		}
 		
 		
@@ -257,7 +274,7 @@ int main(void)
 		#ifdef SERIAL_FEEDBACK
 			uint16_t checksum;
 			checksum = (uint16_t)(NewFeedback.start ^ NewFeedback.cmd1 ^ NewFeedback.cmd2 ^ NewFeedback.speedR ^ NewFeedback.speedL
-								^ NewFeedback.speedR_meas ^ NewFeedback.speedL_meas ^ NewFeedback.batVoltage ^ NewFeedback.boardTemp);
+								^ NewFeedback.speedR_meas ^ NewFeedback.speedL_meas ^ NewFeedback.batVoltage ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
 			if (NewFeedback.start == SERIAL_START_FRAME && NewFeedback.checksum == checksum) {
           if (timeoutFlagSerial) {                      // Check for previous timeout flag  
             if (timeoutCntSerial-- <= 0)                // Timeout de-qualification

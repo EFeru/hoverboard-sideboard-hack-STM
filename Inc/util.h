@@ -27,11 +27,11 @@
 /* general functions */
 void consoleLog(char *message);
 void get_tick_count_ms(unsigned long *count);
-void introDemoLED(uint32_t tDelay);
+void intro_demo_led(uint32_t tDelay);
 
 /* i2c write/read functions */
 int8_t i2c_writeBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data);
-int8_t i2c_writeByte (uint8_t slaveAddr, uint8_t regAddr, uint8_t  data);
+int8_t i2c_writeByte (uint8_t slaveAddr, uint8_t regAddr, uint8_t data);
 int8_t i2c_writeBit  (uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t  data);
 int8_t i2c_readBytes (uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data);
 int8_t i2c_readByte  (uint8_t slaveAddr, uint8_t regAddr, uint8_t *data);

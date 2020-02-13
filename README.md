@@ -14,6 +14,9 @@ This repository implements the firmware for the hoveboard sideboards. The hovebo
 The original sideboard hardware supports one 4-pin cable that originally was connected to the hoveboard mainboard. It breaks out GND, 12/15V and USART. Additionally, two ports are used to connect to the LED boards. On the back of the board, two Photo Interrupter Optical Switches can be found, originally used to detect if a human is standing on the hoverboard.
 ![sideboard](/docs/pictures/sideboard_pinout.png)
 
+The LED boards consist of colored LEDs (blue, red, green, orange) used for design and to inform the user about the current hoverboard state.
+![ledboard](/docs/pictures/ledboard_pinout.png)
+
 The heart of the sideboard is a [STM32F103C8T6](/docs/stm32f103c8-Datasheet.pdf) with the pinout shown in the follwing figure:
 ![MCU_pinout](/docs/pictures/MCU_pinout.png)
 
@@ -40,14 +43,15 @@ If you have never flashed your sideboard before, the MCU is probably locked. To 
 
 To build and flash choose one of the following methods:
 
-### Method 1: Using Platformio (recommended)
+### Method 1: Using Platformio
 
 - open the folder in the IDE of choice (vscode or Atom)
 - press the 'PlatformIO:Build' or the 'PlatformIO:Upload' button (bottom left in vscode).
 
 ### Method 2: Using Keil uVision
 
-- in [Keil uVision](https://www.keil.com/download/product/), open the [sideboard-hack.uvproj](/MDK-ARM/) 
+- in [Keil uVision](https://www.keil.com/download/product/), open the [sideboard-hack.uvproj](/MDK-ARM/)
+- if you are asked to install missing package, click `Yes`
 - click Build Target (or press F7) to build the firmware
 - click Load Code (or press F8) to flash the firmware.
 

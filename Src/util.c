@@ -35,7 +35,7 @@ extern I2C_HandleTypeDef hi2c1;
 void consoleLog(char *message)
 {
   #ifdef SERIAL_DEBUG
-		 log_i("%s", message);
+	log_i("%s", message);
   #endif
 }
 
@@ -51,51 +51,49 @@ void get_tick_count_ms(unsigned long *count)
 	#else
 		#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 	#endif
-	PUTCHAR_PROTOTYPE
-	{
+	PUTCHAR_PROTOTYPE {
 		HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 1000);  
 		return ch;
 	}
 	
 	#ifdef __GNUC__
-	int _write(int file, char *ptr, int len)
-	{
-		int DataIdx;
-		for (DataIdx = 0; DataIdx < len; DataIdx++) { __io_putchar( *ptr++ );}
-		return len; 
-	}
+		int _write(int file, char *data, int len) {
+			int i;
+			for (i = 0; i < len; i++) { __io_putchar( *data++ );}
+			return len; 
+		}
 	#endif
 #endif
 
-void introDemoLED(uint32_t tDelay)
+void intro_demo_led(uint32_t tDelay)
 {
-		int i;
+	int i;
+
+	for (i = 0; i < 6; i++) {
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);		
+		HAL_Delay(tDelay);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);	
+		HAL_Delay(tDelay);
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);	
+		HAL_Delay(tDelay);
+	}
 	
-		for (i = 0; i < 6; i++) {
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);		
-			HAL_Delay(tDelay);
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);	
-			HAL_Delay(tDelay);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);	
-			HAL_Delay(tDelay);
-		}
-		
-		for (i = 0; i < 2; i++) {
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET);
-			HAL_Delay(tDelay);
-			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET);
-		}		
+	for (i = 0; i < 2; i++) {
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET);
+		HAL_Delay(tDelay);
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET);
+	}		
 		
 }
 
@@ -106,12 +104,12 @@ void introDemoLED(uint32_t tDelay)
  */
 int8_t i2c_writeBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data)
 {	
-  // !! Using the I2C Interrupt will fail writing the DMP.. could be that DMP memory writing requires more time !! So use the I2C without interrupt.
-  // HAL_I2C_Mem_Write_IT(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
+	// !! Using the I2C Interrupt will fail writing the DMP.. could be that DMP memory writing requires more time !! So use the I2C without interrupt.
+	// HAL_I2C_Mem_Write_IT(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
 	// while(HAL_I2C_STATE_READY != HAL_I2C_GetState(&hi2c1));                     // Wait until all data bytes are sent/received
 	// return 0;
 
-  return HAL_I2C_Mem_Write(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100); 		// Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
+	return HAL_I2C_Mem_Write(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100); 		// Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
 
 }
 
@@ -140,8 +138,8 @@ int8_t i2c_writeBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t 
  */
 int8_t i2c_readBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data) 
 {	  
-  // !! Using the I2C Interrupt will fail writing the DMP.. could be that DMP memory writing requires more time !! So use the I2C without interrupt.
-  // HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
+	// !! Using the I2C Interrupt will fail writing the DMP.. could be that DMP memory writing requires more time !! So use the I2C without interrupt.
+	// HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
 	// while(HAL_I2C_STATE_READY != HAL_I2C_GetState(&hi2c1));                   // Wait until all data bytes are sent/received
 	// return 0;
 

@@ -31,7 +31,7 @@
 #define UART_DMA_CHANNEL_RX 			DMA1_Channel6
 
 #if defined(PRINTF_FLOAT_SUPPORT) && defined(SERIAL_DEBUG) && defined(__GNUC__)
-	asm(".global _printf_float"); 		// this is the magic trick for printf to support float
+	asm(".global _printf_float"); 		// this is the magic trick for printf to support float. Warning: It will increase code considerably! Better to avoid!
 #endif
 
 /* =========================== Defines General =========================== */
@@ -47,53 +47,59 @@
 #ifdef BYPASS_CUBEMX_DEFINES
 
 /* =========================== Defines LEDs =========================== */
-#define LED1_GPIO_Port 					GPIOA
-#define LED1_Pin 						GPIO_PIN_0		// RED
-#define LED2_GPIO_Port 					GPIOB
-#define LED2_Pin 						GPIO_PIN_9		// GREEN
-#define LED3_GPIO_Port 					GPIOB
-#define LED3_Pin 						GPIO_PIN_8		// YELLOW
-#define LED4_GPIO_Port 					GPIOB
-#define LED4_Pin 						GPIO_PIN_5		// BLUE1
-#define LED5_GPIO_Port 					GPIOB
-#define LED5_Pin 						GPIO_PIN_4		// BLUE2
+#define LED1_GPIO_Port 				GPIOA
+#define LED1_Pin 					GPIO_PIN_0		// RED
+#define LED2_GPIO_Port 				GPIOB
+#define LED2_Pin 					GPIO_PIN_9		// GREEN
+#define LED3_GPIO_Port 				GPIOB
+#define LED3_Pin 					GPIO_PIN_8		// YELLOW
+#define LED4_GPIO_Port 				GPIOB
+#define LED4_Pin 					GPIO_PIN_5		// BLUE1
+#define LED5_GPIO_Port 				GPIOB
+#define LED5_Pin 					GPIO_PIN_4		// BLUE2
+
+#define LED1_SET     				(0x01)
+#define LED2_SET     				(0x02)
+#define LED3_SET     				(0x04)
+#define LED4_SET     				(0x08)
+#define LED5_SET     				(0x10)
 
 /* =========================== Defines SENSORS =========================== */
-#define SENSOR1_GPIO_Port 				GPIOA
-#define SENSOR1_Pin 					GPIO_PIN_4
-#define SENSOR2_GPIO_Port 				GPIOC
-#define SENSOR2_Pin 					GPIO_PIN_14
+#define SENSOR1_GPIO_Port 			GPIOA
+#define SENSOR1_Pin 				GPIO_PIN_4
+#define SENSOR2_GPIO_Port 			GPIOC
+#define SENSOR2_Pin 				GPIO_PIN_14
 
 /* =========================== Defines AUX =========================== */
-#define AUX1_PU_GPIO_Port				GPIOC
-#define AUX1_PU_Pin						GPIO_PIN_15
-#define AUX2_GPIO_Port 					GPIOA
-#define AUX2_Pin 						GPIO_PIN_1
-#define AUX3_PU_GPIO_Port				GPIOB
-#define AUX3_PU_Pin						GPIO_PIN_11
+#define AUX1_PU_GPIO_Port			GPIOC
+#define AUX1_PU_Pin					GPIO_PIN_15
+#define AUX2_GPIO_Port 				GPIOA
+#define AUX2_Pin 					GPIO_PIN_1
+#define AUX3_PU_GPIO_Port			GPIOB
+#define AUX3_PU_Pin					GPIO_PIN_11
 
 /* =========================== Defines I2C =========================== */
-#define MPU_SCL_GPIO_Port 				GPIOB
-#define MPU_SCL_Pin 					GPIO_PIN_6
-#define MPU_SDA_GPIO_Port 				GPIOB
-#define MPU_SDA_Pin 					GPIO_PIN_7
-// #define I2C_OWN_ADDRESS7    			0x24
+#define MPU_SCL_GPIO_Port 			GPIOB
+#define MPU_SCL_Pin 				GPIO_PIN_6
+#define MPU_SDA_GPIO_Port 			GPIOB
+#define MPU_SDA_Pin 				GPIO_PIN_7
+// #define I2C_OWN_ADDRESS7    		0x24
 
 #endif
 
 /* =========================== Defines MPU-6050 =========================== */
-#define log_i       					printf				// redirect the log_i debug function to printf
-#define RAD2DEG 						57.295779513082323  // RAD2DEG = 180/pi. Example: angle[deg] = angle[rad] * RAD2DEG
-#define ACCEL_ON        				(0x01)
-#define GYRO_ON         				(0x02)
-#define COMPASS_ON      				(0x04)
+#define log_i       				printf				// redirect the log_i debug function to printf
+#define RAD2DEG 					57.295779513082323  // RAD2DEG = 180/pi. Example: angle[deg] = angle[rad] * RAD2DEG
+#define ACCEL_ON        			(0x01)
+#define GYRO_ON         			(0x02)
+#define COMPASS_ON      			(0x04)
 
-#define PRINT_ACCEL     				(0x01)
-#define PRINT_GYRO      				(0x02)
-#define PRINT_QUAT      				(0x04)
-#define PRINT_EULER     				(0x08)
-#define PRINT_TEMP     					(0x10)
-#define PRINT_PEDO      				(0x20)
+#define PRINT_ACCEL     			(0x01)
+#define PRINT_GYRO      			(0x02)
+#define PRINT_QUAT      			(0x04)
+#define PRINT_EULER     			(0x08)
+#define PRINT_TEMP     				(0x10)
+#define PRINT_PEDO      			(0x20)
 
 typedef struct{
 	int16_t  	x;
