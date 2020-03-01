@@ -236,7 +236,8 @@ int main(void)
 			consoleLog("-- SENSOR 1 Active --\n");		
 		} else if(sensor1 == GPIO_PIN_SET && sensor1_read == GPIO_PIN_RESET) {
       sensor1 = GPIO_PIN_RESET;
-			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);			
+			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
+      consoleLog("-- SENSOR 1 Deactive --\n");
 		}
 		
 		// SENSOR2
@@ -248,6 +249,7 @@ int main(void)
 		} else if (sensor2 == GPIO_PIN_SET && sensor2_read == GPIO_PIN_RESET) {
       sensor2 = GPIO_PIN_RESET;
 			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET);
+      consoleLog("-- SENSOR 2 Deactive --\n");
 		}
 
     if (sensor1 == GPIO_PIN_SET) {
