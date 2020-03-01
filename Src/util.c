@@ -69,7 +69,7 @@ void intro_demo_led(uint32_t tDelay)
 {
 	int i;
 
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 3; i++) {
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);		
 		HAL_Delay(tDelay);

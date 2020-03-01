@@ -90,6 +90,7 @@
 /* =========================== Defines MPU-6050 =========================== */
 #define log_i       				printf				// redirect the log_i debug function to printf
 #define RAD2DEG 					57.295779513082323  // RAD2DEG = 180/pi. Example: angle[deg] = angle[rad] * RAD2DEG
+#define q30 						1073741824 			// 1073741824 = 2^30
 #define ACCEL_ON        			(0x01)
 #define GYRO_ON         			(0x02)
 #define COMPASS_ON      			(0x04)

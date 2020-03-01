@@ -2,7 +2,7 @@
 .pioenvs/
 .vscode/
 MDK-ARM/DebugConfig/
-MDK-ARM/Listing/
+MDK-ARM/Listings/
 MDK-ARM/Objects/
 MDK-ARM/RTE/
 MDK-ARM/*.uvguix.*
