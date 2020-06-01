@@ -5,6 +5,7 @@
  */
 #ifndef DMPKEY_H__
 #define DMPKEY_H__
+#ifdef  MPU_SENSOR_ENABLE
 
 
 #define KEY_CFG_25                  (0)
@@ -492,4 +493,5 @@ typedef struct {
 
 
 
+#endif // MPU_SENSOR_ENABLE
 #endif // DMPKEY_H__

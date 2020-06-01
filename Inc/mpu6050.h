@@ -23,6 +23,7 @@
 // Define to prevent recursive inclusion
 #ifndef MPU6050_H
 #define MPU6050_H
+#ifdef  MPU_SENSOR_ENABLE
 
 #include <stdint.h>
 #include "defines.h"
@@ -143,4 +144,5 @@ void mpu_handle_input(char c);
 void mpu_print_to_console(void);
 
 
-#endif
+#endif // MPU_SENSOR_ENABLE
+#endif // MPU6050_H

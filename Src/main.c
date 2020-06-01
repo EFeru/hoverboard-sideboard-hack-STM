@@ -170,6 +170,8 @@ int main(void)
 	#endif
 
 	intro_demo_led(100);								// Short LEDs intro demo with 100 ms delay. This also gives some time for the MPU-6050 to power-up.	
+
+  #ifdef MPU_SENSOR_ENABLE
 	if(mpu_config()) { 									// IMU MPU-6050 config
 		mpuStatus = ERROR;
 		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on RED LED
@@ -179,6 +181,9 @@ int main(void)
 		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on GREEN LED
 	}
 	mpu_handle_input('h'); 						  // Print the User Help commands to serial
+  #else
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on GREEN LED
+	#endif
 
   /* USER CODE END 2 */
 
@@ -201,7 +206,7 @@ int main(void)
 		#endif
 
 		// ==================================== USER Handling ====================================
-		#ifdef SERIAL_DEBUG
+		#if defined(MPU_SENSOR_ENABLE) && defined(SERIAL_DEBUG)
       // Get the user Input as one character from Serial
       if (userCommand != 0) { 					// Check the availability of a user command set by the UART DMA
         log_i("Command = %c\n", userCommand);						
@@ -212,6 +217,7 @@ int main(void)
       
 		
 		// ==================================== MPU-6050 Handling ====================================
+    #if defined(MPU_SENSOR_ENABLE) && defined(SERIAL_DEBUG)
 		// Get MPU data. Because the MPU-6050 interrupt pin is not wired we have to check DMP data by pooling periodically
 		if (SUCCESS == mpuStatus) {
 			mpu_get_data();
@@ -222,6 +228,7 @@ int main(void)
 		if (main_loop_counter % 50 == 0) {
 			mpu_print_to_console();
 		}	
+    #endif
 		
 
 		// ==================================== SENSORS Handling ====================================
@@ -293,7 +300,7 @@ int main(void)
           timeoutCntSerial  = SERIAL_TIMEOUT;         // Limit timout counter value
         }
         // Most probably we are out-of-sync. Try to re-sync by reseting the DMA
-        if (main_loop_counter % 150 == 0) {
+        if (NewFeedback.start != SERIAL_START_FRAME && NewFeedback.start != 0xFFFF && main_loop_counter % 5 == 0) { 
           HAL_UART_DMAStop(&huart2);
           HAL_UART_Receive_DMA(&huart2, (uint8_t *)&NewFeedback, sizeof(NewFeedback));
         }
