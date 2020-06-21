@@ -112,9 +112,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
-    // DMA1_Channel7->CPAR     = (uint32_t) & (USART2->DR);
-    // DMA1_Channel7->CNDTR    = 0;
-    // DMA1->IFCR              = DMA_IFCR_CTCIF7 | DMA_IFCR_CHTIF7 | DMA_IFCR_CGIF7;
+    __HAL_UART_ENABLE_IT (uartHandle, UART_IT_IDLE);  // Enable the USART IDLE line detection interrupt
   /* USER CODE END USART2_MspInit 1 */
   }
 }

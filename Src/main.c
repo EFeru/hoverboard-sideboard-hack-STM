@@ -49,24 +49,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-extern UART_HandleTypeDef huart2;
-uint8_t rxBuffer, userCommand = 0;							// holds the user command input
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  __HAL_UART_FLUSH_DRREGISTER(&huart2);           // Clear the buffer to prevent overrun
-    
-  #ifdef SERIAL_DEBUG  
-    if (rxBuffer != '\n' && rxBuffer != '\r') { 	// Do not accept 'new line' (ascii 10) and 'carriage return' (ascii 13) commands
-        userCommand = rxBuffer;
-    }
-  #endif
-}
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -83,44 +66,25 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern UART_HandleTypeDef huart2;
+
 #ifdef SERIAL_CONTROL
-typedef struct{
-  uint16_t	start;
-  int16_t  	roll;
-  int16_t  	pitch;
-  int16_t  	yaw;
-  uint16_t  sensors;
-  uint16_t 	checksum;
-} SerialSideboard;
-SerialSideboard Sideboard;
+extern SerialSideboard Sideboard;
 #endif
 
 #ifdef SERIAL_FEEDBACK
-typedef struct{
-	uint16_t 	start;
-	int16_t 	cmd1;
-	int16_t 	cmd2;
-	int16_t 	speedR_meas;
-	int16_t 	speedL_meas;
-	int16_t 	batVoltage;
-	int16_t 	boardTemp;
-	uint16_t 	cmdLed;
-	uint16_t  checksum;
-} SerialFeedback;
-SerialFeedback Feedback;
-SerialFeedback NewFeedback;
-
-static int16_t timeoutCntSerial   = 0;  				// Timeout counter for Rx Serial command
-static uint8_t timeoutFlagSerial  = 0;  				// Timeout Flag for Rx Serial command: 0 = OK, 1 = Problem detected (line disconnected or wrong Rx data)
+extern SerialFeedback Feedback;
+extern uint16_t timeoutCntSerial;                 // Timeout counter for Rx Serial command
+extern uint8_t timeoutFlagSerial;                 // Timeout Flag for Rx Serial command: 0 = OK, 1 = Problem detected (line disconnected or wrong Rx data)
 #endif
 
-extern MPU_Data 	mpu;													// holds the MPU-6050 data
-ErrorStatus				mpuStatus;					          // holds the MPU-6050 status: SUCCESS or ERROR
+extern MPU_Data     mpu;                          // holds the MPU-6050 data
+extern ErrorStatus  mpuStatus;                    // holds the MPU-6050 status: SUCCESS or ERROR
 
-GPIO_PinState	  	sensor1, sensor2; 					  // holds the sensor1 and sensor 2 values
-GPIO_PinState	  	sensor1_read, sensor2_read;	  // holds the instantaneous Read for sensor1 and sensor 2
+GPIO_PinState       sensor1, sensor2;             // holds the sensor1 and sensor 2 values
+GPIO_PinState       sensor1_read, sensor2_read;   // holds the instantaneous Read for sensor1 and sensor 2
 
-static uint32_t 	main_loop_counter;						// main loop counter to perform task squeduling inside main()
+static uint32_t     main_loop_counter;            // main loop counter to perform task squeduling inside main()
 /* USER CODE END 0 */
 
 /**
@@ -155,36 +119,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
-  #ifdef SERIAL_DEBUG
-    __HAL_UART_FLUSH_DRREGISTER(&huart2);
-    HAL_UART_Receive_DMA (&huart2, (uint8_t *)&rxBuffer, sizeof(rxBuffer));
-  #endif
-  #ifdef SERIAL_CONTROL
-    __HAL_UART_FLUSH_DRREGISTER(&huart2);
-  	HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&Sideboard, sizeof(Sideboard));
-  #endif
-  #ifdef SERIAL_FEEDBACK
-    __HAL_UART_FLUSH_DRREGISTER(&huart2);
-		HAL_UART_Receive_DMA (&huart2, (uint8_t *)&NewFeedback, sizeof(NewFeedback));
-	#endif
-
-	intro_demo_led(100);								// Short LEDs intro demo with 100 ms delay. This also gives some time for the MPU-6050 to power-up.	
-
-  #ifdef MPU_SENSOR_ENABLE
-	if(mpu_config()) { 									// IMU MPU-6050 config
-		mpuStatus = ERROR;
-		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on RED LED
-	}
-	else {
-		mpuStatus = SUCCESS;
-		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on GREEN LED
-	}
-	mpu_handle_input('h'); 						  // Print the User Help commands to serial
-  #else
-		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);  // Turn on GREEN LED
-	#endif
-
+  input_init(); 										// Input initialization
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -203,19 +138,9 @@ int main(void)
 				if (Feedback.cmdLed & LED4_SET) { HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET); }
 				if (Feedback.cmdLed & LED5_SET) { HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET); } else { HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET); }
 			}
-		#endif
-
-		// ==================================== USER Handling ====================================
-		#if defined(MPU_SENSOR_ENABLE) && defined(SERIAL_DEBUG)
-      // Get the user Input as one character from Serial
-      if (userCommand != 0) { 					// Check the availability of a user command set by the UART DMA
-        log_i("Command = %c\n", userCommand);						
-        mpu_handle_input(userCommand);
-        userCommand = 0;
-      }
-		#endif			
-      
+		#endif 
 		
+
 		// ==================================== MPU-6050 Handling ====================================
     #if defined(MPU_SENSOR_ENABLE) && defined(SERIAL_DEBUG)
 		// Get MPU data. Because the MPU-6050 interrupt pin is not wired we have to check DMP data by pooling periodically
@@ -242,6 +167,7 @@ int main(void)
 			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);
 			consoleLog("-- SENSOR 1 Active --\n");		
 		} else if(sensor1 == GPIO_PIN_SET && sensor1_read == GPIO_PIN_RESET) {
+      // Sensor DEACTIVE: Do something here (one time task on deactivation)
       sensor1 = GPIO_PIN_RESET;
 			HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
       consoleLog("-- SENSOR 1 Deactive --\n");
@@ -254,6 +180,7 @@ int main(void)
 			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_SET);
 			consoleLog("-- SENSOR 2 Active --\n");
 		} else if (sensor2 == GPIO_PIN_SET && sensor2_read == GPIO_PIN_RESET) {
+      // Sensor DEACTIVE: Do something here (one time task on deactivation)
       sensor2 = GPIO_PIN_RESET;
 			HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, GPIO_PIN_RESET);
       consoleLog("-- SENSOR 2 Deactive --\n");
@@ -269,7 +196,7 @@ int main(void)
 		
 		// ==================================== SERIAL Tx/Rx Handling ====================================
 		#ifdef SERIAL_CONTROL						
-      if (main_loop_counter % 5 == 0) {		//  Transmit Tx data periodically using DMA
+      if (main_loop_counter % 5 == 0 &&  __HAL_DMA_GET_COUNTER(huart2.hdmatx) == 0) { 	// Check if DMA channel counter is 0 (meaning all data has been transferred)
 				Sideboard.start    	= (uint16_t)SERIAL_START_FRAME;
 				Sideboard.roll    	= (int16_t)mpu.euler.roll;
 				Sideboard.pitch    	= (int16_t)mpu.euler.pitch;
@@ -282,32 +209,12 @@ int main(void)
 		#endif
 		
 		#ifdef SERIAL_FEEDBACK
-      uint16_t checksum;
-      checksum = (uint16_t)(NewFeedback.start ^ NewFeedback.cmd1 ^ NewFeedback.cmd2 ^ NewFeedback.speedR_meas ^ NewFeedback.speedL_meas
-                ^ NewFeedback.batVoltage ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
-      if (NewFeedback.start == SERIAL_START_FRAME && NewFeedback.checksum == checksum) {
-          if (timeoutFlagSerial) {                    // Check for previous timeout flag  
-            if (timeoutCntSerial-- <= 0)              // Timeout de-qualification
-              timeoutFlagSerial = 0;                  // Timeout flag cleared           
-          } else {
-            memcpy(&Feedback, &NewFeedback, sizeof(Feedback));	// Copy the new data 
-            NewFeedback.start = 0xFFFF;               // Change the Start Frame for timeout detection in the next cycle
-            timeoutCntSerial  = 0;                    // Reset the timeout counter         
-          }
-      } else {
-        if (timeoutCntSerial++ >= SERIAL_TIMEOUT) {   // Timeout qualification            
-          timeoutFlagSerial = 1;                      // Timeout detected
-          timeoutCntSerial  = SERIAL_TIMEOUT;         // Limit timout counter value
-        }
-        // Most probably we are out-of-sync. Try to re-sync by reseting the DMA
-        if (NewFeedback.start != SERIAL_START_FRAME && NewFeedback.start != 0xFFFF && main_loop_counter % 5 == 0) { 
-          HAL_UART_DMAStop(&huart2);
-          HAL_UART_Receive_DMA(&huart2, (uint8_t *)&NewFeedback, sizeof(NewFeedback));
-        }
-      }
-            
-      if (timeoutFlagSerial && main_loop_counter % 100 == 0) {        // In case of timeout bring the system to a Safe State and indicate error if desired
-        HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);					        // Toggle the Yellow LED every 100 ms
+      if (timeoutCntSerial++ >= SERIAL_TIMEOUT) {               // Timeout qualification
+        timeoutFlagSerial = 1;                                  // Timeout detected
+        timeoutCntSerial  = SERIAL_TIMEOUT;                     // Limit timout counter value
+			}  
+      if (timeoutFlagSerial && main_loop_counter % 100 == 0) {  // In case of timeout bring the system to a Safe State and indicate error if desired
+        HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);           // Toggle the Yellow LED every 100 ms
       }
 		#endif	
 

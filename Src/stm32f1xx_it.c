@@ -23,7 +23,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "util.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -267,7 +267,10 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-
+  if(RESET != __HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_IDLE)) {  // Check for IDLE line interrupt
+      __HAL_UART_CLEAR_IDLEFLAG(&huart2);                         // Clear IDLE line flag (otherwise it will continue to enter interrupt)
+      usart_rx_check();                                           // Check for data to process
+  }
   /* USER CODE END USART2_IRQn 1 */
 }
 
