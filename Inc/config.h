@@ -73,9 +73,8 @@
   #define USART_MAIN_BAUD         38400       // [bit/s] MAIN Serial Tx/Rx baud rate
 #endif
 #define SERIAL_START_FRAME        0xABCD      // [-] Start frame definition for reliable serial communication
-#define SERIAL_TIMEOUT            500         // [-] Number of wrong received data for Serial timeout detection. Depends on DELAY_IN_MAIN_LOOP
 #define SERIAL_BUFFER_SIZE        64          // [bytes] Size of Serial Rx buffer. Make sure it is always larger than the 'Feedback' structure size
-
+#define SERIAL_TIMEOUT            600         // [-] Number of wrong received data for Serial timeout detection. Depends on DELAY_IN_MAIN_LOOP
 
 /* ==================================== VALIDATE SETTINGS ==================================== */
 #if defined(SERIAL_DEBUG) && defined(SERIAL_CONTROL)

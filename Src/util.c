@@ -39,6 +39,7 @@ SerialSideboard Sideboard;
 #if defined(SERIAL_DEBUG) || defined(SERIAL_FEEDBACK)
 static uint8_t rx_buffer[SERIAL_BUFFER_SIZE]; 	// USART Rx DMA circular buffer
 static uint32_t rx_buffer_len = ARRAY_LEN(rx_buffer);
+static uint32_t old_pos;
 #endif
 
 #ifdef SERIAL_FEEDBACK
@@ -155,7 +156,6 @@ void input_init(void) {
 void usart_rx_check(void)
 {
 	#ifdef SERIAL_DEBUG
-	static uint32_t old_pos;
 	uint32_t pos;
 
 	pos = rx_buffer_len - __HAL_DMA_GET_COUNTER(huart2.hdmarx); 				// Calculate current position in buffer, Rx: DMA1_Channel6->CNDTR, Tx: DMA1_Channel7
@@ -170,14 +170,12 @@ void usart_rx_check(void)
         }
     }
     old_pos = pos;                              								// Updated old position
-
 	if (old_pos == rx_buffer_len) { 											// Check and manually update if we reached end of buffer
         old_pos = 0;
     }
 	#endif // SERIAL_DEBUG
 
 	#ifdef SERIAL_FEEDBACK
-	static uint32_t old_pos;
 	uint32_t pos;
 	uint8_t *ptr;	
     pos = rx_buffer_len - __HAL_DMA_GET_COUNTER(huart2.hdmarx); 				// Calculate current position in buffer, Rx: DMA1_Channel6->CNDTR, Tx: DMA1_Channel7	
@@ -247,9 +245,28 @@ void usart_process_data(SerialFeedback *Feedback_in, SerialFeedback *Feedback_ou
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *uartHandle) {
 	#if defined(SERIAL_DEBUG) || defined(SERIAL_FEEDBACK)
 	if(uartHandle->Instance == USART2) {
-		HAL_UART_Receive_DMA (uartHandle, (uint8_t *)rx_buffer, sizeof(rx_buffer));
+		HAL_DMA_Abort(uartHandle->hdmarx);
+		UART_EndRxTransfer(uartHandle);
+		HAL_UART_Receive_DMA(uartHandle, (uint8_t *)rx_buffer, sizeof(rx_buffer));
+		old_pos = 0;
 	}
 	#endif
+}
+
+/**
+  * @brief  End ongoing Rx transfer on UART peripheral (following error detection or Reception completion).
+  * @param  huart: UART handle.
+  * @retval None
+  */
+void UART_EndRxTransfer(UART_HandleTypeDef *huart)
+{
+  /* Disable RXNE (Interrupt Enable) and PE (Parity Error) interrupts */
+  CLEAR_BIT(huart->Instance->CR1, (USART_CR1_RXNEIE | USART_CR1_PEIE));
+  /* Disable EIE (Frame error, noise error, overrun error) interrupts */
+  CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);
+
+  /* At end of Rx process, restore huart->RxState to Ready */
+  huart->RxState = HAL_UART_STATE_READY;
 }
 
 /* =========================== I2C WRITE Functions =========================== */

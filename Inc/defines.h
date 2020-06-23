@@ -27,8 +27,6 @@
 #include "config.h"
 #include "util.h"
 
-#define UART_DMA_CHANNEL_TX 			DMA1_Channel7
-#define UART_DMA_CHANNEL_RX 			DMA1_Channel6
 
 #if defined(PRINTF_FLOAT_SUPPORT) && defined(SERIAL_DEBUG) && defined(__GNUC__)
 	asm(".global _printf_float"); 		// this is the magic trick for printf to support float. Warning: It will increase code considerably! Better to avoid!
@@ -135,4 +133,4 @@ typedef struct {
 	int16_t 	temp;
 } MPU_Data;
 
-#endif
+#endif //  DEFINES_H 

@@ -22,23 +22,9 @@
 #define UTIL_H
 
 #include <stdint.h>
-#include "defines.h"
 
-/* general functions */
-void consoleLog(char *message);
-void get_tick_count_ms(unsigned long *count);
-void intro_demo_led(uint32_t tDelay);
 
-/* input initialization function */
-void input_init(void);
-
-/* usart read functions */
-void usart_rx_check(void);
-
-#ifdef SERIAL_DEBUG
-void usart_process_debug(uint8_t *userCommand, uint32_t len);
-#endif
-
+/* Rx Structures USART */
 #ifdef SERIAL_CONTROL
 typedef struct{
   uint16_t  start;
@@ -61,8 +47,25 @@ typedef struct{
   uint16_t  cmdLed;
   uint16_t  checksum;
 } SerialFeedback;
+#endif
+
+/* general functions */
+void consoleLog(char *message);
+void get_tick_count_ms(unsigned long *count);
+void intro_demo_led(uint32_t tDelay);
+
+/* input initialization function */
+void input_init(void);
+
+/* usart read functions */
+void usart_rx_check(void);
+#ifdef SERIAL_DEBUG
+void usart_process_debug(uint8_t *userCommand, uint32_t len);
+#endif
+#ifdef SERIAL_FEEDBACK
 void usart_process_data(SerialFeedback *Feedback_in, SerialFeedback *Feedback_out);
 #endif
+void UART_EndRxTransfer(UART_HandleTypeDef *huart);
 
 /* i2c write/read functions */
 int8_t i2c_writeBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data);
