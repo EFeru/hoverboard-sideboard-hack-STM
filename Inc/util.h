@@ -56,6 +56,7 @@ void intro_demo_led(uint32_t tDelay);
 
 /* input initialization function */
 void input_init(void);
+void UART_DisableRxErrors(UART_HandleTypeDef *huart);
 
 /* usart read functions */
 void usart_rx_check(void);
@@ -65,7 +66,6 @@ void usart_process_debug(uint8_t *userCommand, uint32_t len);
 #ifdef SERIAL_FEEDBACK
 void usart_process_data(SerialFeedback *Feedback_in, SerialFeedback *Feedback_out);
 #endif
-void UART_EndRxTransfer(UART_HandleTypeDef *huart);
 
 /* i2c write/read functions */
 int8_t i2c_writeBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t *data);
