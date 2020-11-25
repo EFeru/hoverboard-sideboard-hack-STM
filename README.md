@@ -9,6 +9,16 @@ This repository implements the firmware for the hoveboard sideboards. The hovebo
 ### ► If you have a GD32 sideboard check-out the repo [hoverboard-sideboard-hack-GD](https://github.com/EmanuelFeru/hoverboard-sideboard-hack-GD)
 
 ---
+Table of Contents
+=======================
+
+* [Hardware](#hardware)
+* [Flashing](#flashing)
+* [Example Variants ](#example-variants)
+* [3D Visualization Demo](#3d-visualization-demo)
+* [Contributions](#contributions)
+
+---
 ## Hardware
 
 The original sideboard hardware supports one 4-pin cable that originally was connected to the hoveboard mainboard. It breaks out GND, 12/15V and USART. Additionally, two ports are used to connect to the LED boards. On the back of the board, two Photo Interrupter Optical Switches can be found, originally used to detect if a human is standing on the hoverboard.
