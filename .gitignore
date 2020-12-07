@@ -1,6 +1,8 @@
 .pio/
 .pioenvs/
 .vscode/
+*.gpdsc
+*.mxproject
 MDK-ARM/DebugConfig/
 MDK-ARM/Listings/
 MDK-ARM/Objects/
