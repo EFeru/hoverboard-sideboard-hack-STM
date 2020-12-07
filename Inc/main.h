@@ -60,8 +60,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define USART_MAIN_BAUD 38400
 #define MPU_I2C_SPEED 400000
+#define USART_MAIN_BAUD 115200
+#define USART_AUX_BAUD 115200
 #define SENSOR2_Pin GPIO_PIN_14
 #define SENSOR2_GPIO_Port GPIOC
 #define AUX1_PU_Pin GPIO_PIN_15

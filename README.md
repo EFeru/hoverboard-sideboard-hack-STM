@@ -15,6 +15,7 @@ Table of Contents
 * [Hardware](#hardware)
 * [Example Variants ](#example-variants)
 * [Flashing](#flashing)
+* [Wiring iBUS Receiver](#wiring-ibus-receiver)
 * [3D Visualization Demo](#3d-visualization-demo)
 * [Contributions](#contributions)
 
@@ -48,8 +49,9 @@ For more details see the [MPU-6050 datasheet](/docs/1_MPU-6000-Datasheet.pdf) an
 ## Example Variants 
 
 This firmware offers currently these variants (selectable in [platformio.ini](/platformio.ini) or [config.h](/Inc/config.h)):
-- **VARIANT_DEBUG**: In this variant the user can interact with sideboard by sending commands via a Serial Monitor to observe and check the capabilities of the sideboard.
-- **VARIANT_HOVERBOARD**: In this variant the sideboard is communicating with the mainboard of a hoverboard using the [FOC firmware repository](https://github.com/EmanuelFeru/hoverboard-firmware-hack-FOC).
+- **VARIANT_DEBUG**: In this variant the user can interact with sideboard by sending commands via a Serial Monitor to observe and check the capabilities of the sideboard
+- **VARIANT_HOVERCAR**: This variant can be used for Hovercar build. An RC receiver with iBUS protocol can be connected to the AUX serial Rx pin (see [schematic](#wiring-ibus-receiver))
+- **VARIANT_HOVERBOARD**: In this variant the sideboard is communicating with the mainboard of a hoverboard using the [FOC firmware repository](https://github.com/EmanuelFeru/hoverboard-firmware-hack-FOC)
 
 Of course the firmware can be further customized for other needs or projects.
 
@@ -89,6 +91,15 @@ make -e VARIANT=VARIANT_####
 ```
 make flash
 ```
+
+
+---
+## Wiring iBUS Receiver
+
+An RC transmitter (Flysky [FS-i6S](https://www.banggood.com/custlink/3KvdPnfDPc) or [FS-i6X](https://www.banggood.com/custlink/KmDy5swKPD)) can be connected to the sideboard using an [FS-iA6B](https://www.banggood.com/custlink/KD3RFswKcT) receiver as shown in the following schematic:
+
+![wiring_iBUS_pic](/docs/pictures/wiring_ibus_rc.png)
+
 
 
 ---

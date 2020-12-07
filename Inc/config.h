@@ -27,8 +27,9 @@
 // Ubuntu: define the desired build variant here if you want to use make in console
 // or use VARIANT environment variable for example like "make -e VARIANT=VARIANT_DEBUG". Select only one at a time.
 #if !defined(PLATFORMIO)
-  // #define VARIANT_DEBUG                       // Variant for debugging and checking the capabilities of the side-board
-  // #define VARIANT_HOVERBOARD                  // Variant for using the side-boards connected to the Hoverboard mainboard
+  // #define VARIANT_DEBUG                    // Variant for debugging and checking the capabilities of the side-board
+  // #define VARIANT_HOVERCAR                 // Variant for using the side-boards connected to the Hoverboard mainboard
+  // #define VARIANT_HOVERBOARD               // Variant for using the side-boards connected to the Hoverboard mainboard
 #endif
 
 /* ==================================== DO NOT TOUCH SETTINGS ==================================== */
@@ -36,9 +37,7 @@
 #define MPU6050                               // [-] Define IMU sensor type
 #define MPU_GYRO_FSR              2000        // [deg/s] Set Gyroscope Full Scale Range: 250 deg/s, 500 deg/s, 1000 deg/s, 2000 deg/s. !! DMP sensor fusion works only with 2000 deg/s !!
 #define MPU_ACCEL_FSR             2           // [g] Set Acceleromenter Full Scale Range: 2g, 4g, 8g, 16g. !! DMP sensor fusion works only with 2g !!
-#ifdef BYPASS_CUBEMX_DEFINES
-  #define MPU_I2C_SPEED           400000      // [bit/s] Define I2C speed for communicating with the MPU6050
-#endif
+#define MPU_I2C_SPEED             400000      // [bit/s] Define I2C speed for communicating with the MPU6050
 #define DELAY_IN_MAIN_LOOP        1           // [ms] Delay in the main loop
 // #define PRINTF_FLOAT_SUPPORT                  // [-] Uncomment this for printf to support float on Serial Debug. It will increase code size! Better to avoid it!
 /* =============================================================================================== */
@@ -63,18 +62,46 @@
 #define DMP_SHAKE_REJECT_TIMEOUT  10          // [ms] Set shake rejection timeout. Sets the length of time after a shake rejection that the gyro must stay inside of the threshold before taps can be detected again. A mandatory 60 ms is added to this parameter.
 
 /* ==================================== SETTINGS USART ==================================== */
-#if defined(VARIANT_DEBUG)
-  #define SERIAL_DEBUG                        // [-] Define for Serial Debug via the serial port
-#elif defined(VARIANT_HOVERBOARD)
-  #define SERIAL_CONTROL                      // [-] Define for Serial Control via the serial port
-  #define SERIAL_FEEDBACK                     // [-] Define for Serial Feedback via the serial port
-#endif
-#ifdef BYPASS_CUBEMX_DEFINES
-  #define USART_MAIN_BAUD         38400       // [bit/s] MAIN Serial Tx/Rx baud rate
-#endif
 #define SERIAL_START_FRAME        0xABCD      // [-] Start frame definition for reliable serial communication
 #define SERIAL_BUFFER_SIZE        64          // [bytes] Size of Serial Rx buffer. Make sure it is always larger than the 'Feedback' structure size
 #define SERIAL_TIMEOUT            600         // [-] Number of wrong received data for Serial timeout detection. Depends on DELAY_IN_MAIN_LOOP
+#define USART_MAIN_BAUD           115200      // [bit/s] MAIN Serial Tx/Rx baud rate
+#define USART_AUX_BAUD            115200      // [bit/s] AUX Serial Tx/Rx baud rate
+
+
+/* ==================================== VARIANT DEBUG ==================================== */
+#ifdef VARIANT_DEBUG
+  #define SERIAL_DEBUG                        // [-] Define for Serial Debug via the serial port
+  #define SERIAL_AUX_RX                       // [-] Use AUX4, AUX5 as USART port
+  // #define SERIAL_AUX_TX                       // [-] Use AUX4, AUX5 as USART port
+
+  #define CONTROL_IBUS
+  #define IBUS_NUM_CHANNELS   14              // Total number of IBUS channels to receive, even if they are not used.
+  #define IBUS_LENGTH         0x20
+  #define IBUS_COMMAND        0x40
+#endif
+
+
+/* ==================================== VARIANT HOVERCAR ==================================== */
+#ifdef VARIANT_HOVERCAR
+  #define SERIAL_CONTROL                      // [-] Define for Serial Control via the serial port
+  #define SERIAL_FEEDBACK                     // [-] Define for Serial Feedback via the serial port
+  #define SERIAL_AUX_RX                       // [-] Use AUX4, AUX5 as USART port
+  // #define SERIAL_AUX_TX                       // [-] Use AUX4, AUX5 as USART port
+
+  #define CONTROL_IBUS
+  #define IBUS_NUM_CHANNELS   14              // Total number of IBUS channels to receive, even if they are not used.
+  #define IBUS_LENGTH         0x20
+  #define IBUS_COMMAND        0x40
+#endif
+
+
+/* ==================================== VARIANT HOVERBOARD ==================================== */
+#ifdef VARIANT_HOVERBOARD
+  #define SERIAL_CONTROL                      // [-] Define for Serial Control via the serial port
+  #define SERIAL_FEEDBACK                     // [-] Define for Serial Feedback via the serial port
+#endif
+
 
 /* ==================================== VALIDATE SETTINGS ==================================== */
 #if defined(SERIAL_DEBUG) && defined(SERIAL_CONTROL)
