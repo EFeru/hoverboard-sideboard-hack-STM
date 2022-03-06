@@ -1,6 +1,6 @@
 # hoverboard-sideboard-hack-STM
 
-[![Build Status](https://app.travis-ci.com/EFeru/hoverboard-sideboard-hack-STM.svg?branch=master)](https://app.travis-ci.com/EFeru/hoverboard-sideboard-hack-STM)
+[![Build status](https://github.com/EFeru/hoverboard-sideboard-hack-STM/actions/workflows/build_on_commit.yml/badge.svg)](https://github.com/EFeru/hoverboard-sideboard-hack-STM/actions/workflows/build_on_commit.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=CU2SWN2XV9SCY&currency_code=EUR&source=url)
 
@@ -64,7 +64,15 @@ If you have never flashed your sideboard before, the MCU is probably locked. To 
 
 To build and flash choose one of the following methods:
 
-### Method 1: Using Platformio IDE
+### Method 0: Using GitHub Fork
+- Fork the project
+- Modify desired source files and commit
+- Go to Actions (in the repo top menu)
+- Click on latest build
+- Download the build zip file from the Artifacts section
+- Upload desired `firmware.bin` file using [ST-Link Utility](https://www.st.com/en/development-tools/stsw-link004.html)
+
+### Method 1: Using Platformio IDE (recommended)
 
 - open the folder in the IDE of choice (vscode or Atom)
 - press the 'PlatformIO:Build' or the 'PlatformIO:Upload' button (bottom left in vscode).
