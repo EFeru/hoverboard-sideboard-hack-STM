@@ -554,9 +554,24 @@ int8_t i2c_writeBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_
     // HAL_I2C_Mem_Write_IT(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
     // while(HAL_I2C_STATE_READY != HAL_I2C_GetState(&hi2c1));                     // Wait until all data bytes are sent/received
     // return 0;
-
+#ifdef I2C_SINGLE_BYTE
+    HAL_StatusTypeDef res = HAL_OK;
+    if(regAddr==0x6b && length ==2){
+        uint8_t i;
+        for(i=0; i < length && res == HAL_OK; i++) {
+            res = HAL_I2C_Mem_Write(&hi2c1, slaveAddr << 1, regAddr+i, 1, data+i, 1, 100);    // Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
+        }
+    }
+      else {
+            res = HAL_I2C_Mem_Write(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100);    // Address is shifted one position to the left. LSB is reserved for the Read/Write bit. 
+      }
+      if(res != HAL_OK) {
+         printf("i2c_writeBytes not ok %u %u\r\n", regAddr, length);
+      }
+      return res;
+#else
     return HAL_I2C_Mem_Write(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100);    // Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
-
+#endif
 }
 
 /*
@@ -588,8 +603,27 @@ int8_t i2c_readBytes(uint8_t slaveAddr, uint8_t regAddr, uint8_t length, uint8_t
     // HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr, 1, data, length);
     // while(HAL_I2C_STATE_READY != HAL_I2C_GetState(&hi2c1));                   // Wait until all data bytes are sent/received
     // return 0;
+#ifdef I2C_SINGLE_BYTE
+    HAL_StatusTypeDef res = HAL_OK;
+    if((regAddr==0x72 || regAddr == 0x41) && length ==2) {
+       uint8_t i;
+       for(i=0; i < length && res == HAL_OK; i++) {
+          res= HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr+i, 1, data+i, 1, 100);     // Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
+       }
+    }
+    else {
+        res = HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100);     // Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
 
+    }
+      if(res != HAL_OK) {
+        printf("i2c_readBytes not ok %u %u\r\n", regAddr, length);
+      }
+      return res;
+#else
     return HAL_I2C_Mem_Read(&hi2c1, slaveAddr << 1, regAddr, 1, data, length, 100);     // Address is shifted one position to the left. LSB is reserved for the Read/Write bit.
+#endif
+
+//    
 
 }
 
@@ -615,7 +649,17 @@ int8_t i2c_readBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *
 
 
 
-
+#ifdef USE_RCC_DELAY
+void HAL_Delay(uint32_t mdelay)
+{
+  __IO uint32_t Delay = mdelay * (SystemCoreClock / 8U / 1000U);
+  do
+  {
+    __NOP();
+  }
+  while (Delay --);
+}
+#endif
 
 
 
