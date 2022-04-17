@@ -41,7 +41,8 @@
 #define DELAY_IN_MAIN_LOOP        1           // [ms] Delay in the main loop
 // #define PRINTF_FLOAT_SUPPORT                  // [-] Uncomment this for printf to support float on Serial Debug. It will increase code size! Better to avoid it!
 /* =============================================================================================== */
-#define MPU6052C
+
+// #define MPU6052C   // uncommit for MPU6052C
 
 #ifdef MPU6052C
 #define I2C_SINGLE_BYTE
