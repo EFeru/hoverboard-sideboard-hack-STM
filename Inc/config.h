@@ -42,6 +42,12 @@
 // #define PRINTF_FLOAT_SUPPORT                  // [-] Uncomment this for printf to support float on Serial Debug. It will increase code size! Better to avoid it!
 /* =============================================================================================== */
 
+// #define MPU6052C   // uncommit for MPU6052C
+
+#ifdef MPU6052C
+#define I2C_SINGLE_BYTE
+#define USE_RCC_DELAY  // Use RCC_Delay instead of HAL_Delay
+#endif
 
 /* ==================================== SETTINGS MPU-6050 ==================================== */
 #define MPU_SENSOR_ENABLE                     // [-] Enable flag for MPU-6050 sensor. Comment-out this flag to Disable the MPU sensor and reduce code size.
