@@ -2625,13 +2625,11 @@ int mpu_run_self_test(long *gyro, long *accel)
     unsigned char accel_fsr, fifo_sensors, sensors_on;
     unsigned short gyro_fsr, sample_rate, lpf;
     unsigned char dmp_was_on;
-
     if (st.chip_cfg.dmp_on) {
         mpu_set_dmp_state(0);
         dmp_was_on = 1;
     } else
         dmp_was_on = 0;
-
     /* Get initial settings. */
     mpu_get_gyro_fsr(&gyro_fsr);
     mpu_get_accel_fsr(&accel_fsr);
@@ -2639,7 +2637,6 @@ int mpu_run_self_test(long *gyro, long *accel)
     mpu_get_sample_rate(&sample_rate);
     sensors_on = st.chip_cfg.sensors;
     mpu_get_fifo_config(&fifo_sensors);
-
     /* For older chips, the self-test will be different. */
 #if defined MPU6050
     for (ii = 0; ii < tries; ii++)
@@ -2653,7 +2650,7 @@ int mpu_run_self_test(long *gyro, long *accel)
         goto restore;
     }
     for (ii = 0; ii < tries; ii++)
-        if (!get_st_biases(gyro_st, accel_st, 1))
+       if (!get_st_biases(gyro_st, accel_st, 1))
             break;
     if (ii == tries) {
         /* Again, probably an I2C error. */
@@ -3231,7 +3228,6 @@ void mpu_start_self_test(void)
 {
     int result;
     long gyro[3], accel[3];
-
 #if defined (MPU6500) || defined (MPU9250)
     result = mpu_run_6500_self_test(gyro, accel, 0);
 #elif defined (MPU6050) || defined (MPU9150)
@@ -3781,7 +3777,9 @@ void mpu_handle_input(char c)
             consoleLog("f: Set DMP on/off\r\n");
             consoleLog("v: Set Quaternion on/off\r\n");
             consoleLog("w: Test low-power accel mode\r\n");
+#ifndef MPU6052C
             consoleLog("s: Run self-test (device must be facing up or down)\r\n");
+#endif
             #endif // MPU_SENSOR_ENABLE
             consoleLog("============\r\n");
             break;
@@ -3947,7 +3945,7 @@ void mpu_handle_input(char c)
             hal.sensors |= ACCEL_ON;
             hal.lp_accel_mode = 1;
             break;
-
+#ifndef MPU6052C
         /* The hardware self test is completely localized in the gyro driver.
         * Logging is assumed to be enabled; otherwise, a couple LEDs could
         * probably be used here to display the test results.
@@ -3955,6 +3953,7 @@ void mpu_handle_input(char c)
         case 's':
             mpu_start_self_test();
             break;
+#endif
         #endif // MPU_SENSOR_ENABLE
 
         default:
